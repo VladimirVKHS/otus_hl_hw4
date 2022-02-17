@@ -13,4 +13,4 @@ CREATE TABLE messages (
    shard_factor VARCHAR(2),
    created_at TIMESTAMP DEFAULT (NOW())
 );
-CREATE INDEX messages_chat_id_idx ON messages (chat_id);
+CREATE INDEX messages_chat_id_idx ON messages (shard_factor, chat_id);

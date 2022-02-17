@@ -33,8 +33,7 @@ func GetMessage(ctx context.Context, id string, shardFactor string, message *Mes
 func GetMessagesByChatId(ctx context.Context, chatId string, shardFactor string, result *MessagesListResponse) error {
 	rows, err := otusdb.Db.QueryContext(
 		ctx,
-		"SELECT BIN_TO_UUID(id), message, author_id, chat_id, shard_factor, created_at FROM messages WHERE  chat_id=? AND "+
-			"shard_factor = '"+shardFactor+"'"+
+		"SELECT BIN_TO_UUID(id), message, author_id, chat_id, shard_factor, created_at FROM messages WHERE shard_factor = '"+shardFactor+"' AND chat_id=?"+
 			" ORDER BY created_at DESC",
 		chatId,
 	)
