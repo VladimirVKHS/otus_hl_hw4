@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+  proxysql:
+    container_name: otus_dialog_proxysql
+    image: proxysql/proxysql:2.0.13
+    volumes:
+      - ./docker/proxysql/proxysql.cnf:/etc/proxysql.cnf
+    ports:
+      - "16032:6032"
+      - "16033:6033"
+      - "16070:6070"
+    networks:
+      - internal
+  shard1:
+    container_name: otus_dialog_shard1
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: otus
+    volumes:
+      - ./docker/mysql/scripts:/docker-entrypoint-initdb.d
+      - ./docker/mysql/shard1_data:/var/lib/mysql
+    ports:
+      - "3310:33061"
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '1.0'
+  shard2:
+    container_name: otus_dialog_shard2
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: otus
+    volumes:
+      - ./docker/mysql/scripts:/docker-entrypoint-initdb.d
+      - ./docker/mysql/shard2_data:/var/lib/mysql
+    ports:
+      - "3311:33061"
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '1.0'
+  shard3:
+    container_name: otus_dialog_shard3
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: otus
+    volumes:
+      - ./docker/mysql/scripts:/docker-entrypoint-initdb.d
+      - ./docker/mysql/shard3_data:/var/lib/mysql
+    ports:
+      - "3312:33061"
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '1.0'
+networks:
+  internal:
+    driver: bridge
