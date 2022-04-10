@@ -2,15 +2,21 @@ package create_message_handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"io/ioutil"
 	"net/http"
+	"otus_dialog_go/internal/constants"
 	httpHelper "otus_dialog_go/internal/helpers/http"
 	"otus_dialog_go/internal/logger"
 	"otus_dialog_go/internal/models/message"
 )
 
 func CreateMessageHandler(w http.ResponseWriter, r *http.Request) {
+
+	requestId := r.Context().Value(constants.RequestIDKey).(string)
+	logger.Info(fmt.Sprintf("Create message. Request ID = %s", requestId))
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "BadRequest", http.StatusBadRequest)

@@ -1,7 +1,9 @@
 package get_messages_handler
 
 import (
+	"fmt"
 	"net/http"
+	"otus_dialog_go/internal/constants"
 	"otus_dialog_go/internal/helpers/chat"
 	httpHelper "otus_dialog_go/internal/helpers/http"
 	"otus_dialog_go/internal/logger"
@@ -10,6 +12,10 @@ import (
 )
 
 func GetMessagesHandler(w http.ResponseWriter, r *http.Request) {
+
+	requestId := r.Context().Value(constants.RequestIDKey).(string)
+	logger.Info(fmt.Sprintf("Get messages. Request ID = %s", requestId))
+
 	user1Id, _ := strconv.Atoi(r.URL.Query().Get("user1_id"))
 	if user1Id == 0 {
 		httpHelper.ValidationErrorResponse(w, "user1_id not provided")

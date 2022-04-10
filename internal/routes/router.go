@@ -10,6 +10,7 @@ import (
 func RegisterRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.With(
+		RequestIDMiddleware,
 		cors.Handler(cors.Options{
 			// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 			AllowedOrigins: []string{"https://*", "http://*", "*"},
