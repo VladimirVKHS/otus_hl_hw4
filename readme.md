@@ -17,7 +17,7 @@
      DB_USER=otus
      DB_PASSWORD=otus
      DB_NAME=otus
-     HTTP_PORT=8086
+     HTTP_PORT=7000
 
 
 ## Описание
@@ -28,7 +28,7 @@
 
   Пример запроса:
 
-      POST http://localhost:8086/api/messages
+      POST http://localhost:7000/api/messages
       
       {
           "AuthorId": 10,
@@ -49,7 +49,7 @@
    
    Пример запроса:
 
-       GET http://localhost:8086/api/messages?user1_id=10&user2_id=20    
+       GET http://localhost:7000/api/messages?user1_id=10&user2_id=20    
 
    Пример ответа:
 
