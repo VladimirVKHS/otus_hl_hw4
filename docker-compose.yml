@@ -11,6 +11,8 @@ services:
     networks:
       - otus_sn_network
       - internal
+    depends_on:
+      - proxysql
   proxysql:
     container_name: otus_dialog_proxysql
     image: proxysql/proxysql:2.0.13
@@ -22,6 +24,10 @@ services:
       - "16070:6070"
     networks:
       - internal
+    depends_on:
+      - shard1
+      - shard2
+      - shard3
   shard1:
     container_name: otus_dialog_shard1
     image: mysql
@@ -39,11 +45,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
-          cpus: '1.0'
-        reservations:
-          memory: 512M
-          cpus: '1.0'
+          memory: 256M
+          cpus: '0.5'
   shard2:
     container_name: otus_dialog_shard2
     image: mysql
@@ -61,11 +64,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
-          cpus: '1.0'
-        reservations:
-          memory: 512M
-          cpus: '1.0'
+          memory: 256M
+          cpus: '0.5'
   shard3:
     container_name: otus_dialog_shard3
     image: mysql
@@ -83,11 +83,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
-          cpus: '1.0'
-        reservations:
-          memory: 512M
-          cpus: '1.0'
+          memory: 256M
+          cpus: '0.5'
 networks:
   internal:
     driver: bridge
