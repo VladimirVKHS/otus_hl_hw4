@@ -11,6 +11,7 @@ CREATE TABLE messages (
    chat_id VARCHAR(255) NOT NULL,
    message VARCHAR(4096),
    shard_factor VARCHAR(2),
-   created_at TIMESTAMP DEFAULT (NOW())
+   created_at TIMESTAMP DEFAULT (NOW()),
+   is_read BOOLEAN DEFAULT (false )
 );
 CREATE INDEX messages_chat_id_idx ON messages (shard_factor, chat_id);

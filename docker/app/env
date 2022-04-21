@@ -1,0 +1,6 @@
+DB_HOST=otus_dialog_proxysql
+DB_PORT=6033
+DB_USER=otus
+DB_PASSWORD=otus
+DB_NAME=otus
+HTTP_PORT=7000

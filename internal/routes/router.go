@@ -5,6 +5,7 @@ import (
 	"github.com/go-chi/cors"
 	create_message_handler "otus_dialog_go/internal/handlers/create-message-handler"
 	get_messages_handler "otus_dialog_go/internal/handlers/get-messages-handler"
+	mark_as_read_handler "otus_dialog_go/internal/handlers/mark-as-read-handler"
 )
 
 func RegisterRouter() *chi.Mux {
@@ -24,6 +25,7 @@ func RegisterRouter() *chi.Mux {
 	).Route("/api", func(r chi.Router) {
 		r.Route("/messages", func(r chi.Router) {
 			r.Post("/", create_message_handler.CreateMessageHandler)
+			r.Post("/mark_as_read", mark_as_read_handler.MarkAsReadHandler)
 			r.Get("/", get_messages_handler.GetMessagesHandler)
 		})
 	})

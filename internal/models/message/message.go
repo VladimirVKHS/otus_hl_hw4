@@ -2,9 +2,11 @@ package message
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"otus_dialog_go/internal/helpers/chat"
 	"otus_dialog_go/internal/otusdb"
+	"strings"
 )
 
 type Message struct {
@@ -14,12 +16,19 @@ type Message struct {
 	Message     string `validate:"lte=4096,required"`
 	ShardFactor string
 	CreatedAt   string
+	IsRead      bool
 }
 
 type MessageCreateRequest struct {
 	AuthorId    int    `validate:"required"`
 	AddresseeId int    `validate:"required"`
 	Message     string `validate:"lte=4096,required"`
+}
+
+type MarkAsReadRequest struct {
+	AuthorId    int      `validate:"required"`
+	AddresseeId int      `validate:"required"`
+	MessageIds  []string `validate:"required,gt=0,lte=1000,dive,uuid"`
 }
 
 func (m *MessageCreateRequest) GenerateChatId() string {
@@ -49,6 +58,26 @@ func (m *MessageCreateRequest) CreateMessage(ctx context.Context) (*Message, err
 	return message, nil
 }
 
+func (m *MarkAsReadRequest) GenerateShardFactor() string {
+	return chat.GenerateShardFactor(m.AuthorId, m.AddresseeId)
+}
+
+func (m *MarkAsReadRequest) MarkAsRead(ctx context.Context) (int, error) {
+	var idsArray []string
+	for _, id := range m.MessageIds {
+		idsArray = append(idsArray, fmt.Sprintf("UUID_TO_BIN('%s')", id))
+	}
+	shardFactor := m.GenerateShardFactor()
+	res, err := otusdb.Db.ExecContext(
+		ctx,
+		"UPDATE messages SET is_read = true WHERE shard_factor = '"+shardFactor+"' AND id IN ("+strings.Join(idsArray, ", ")+") AND author_id <> ?",
+		m.AuthorId,
+	)
+	affected, _ := res.RowsAffected()
+	fmt.Println("Affected rows", affected)
+	return int(affected), err
+}
+
 func (m *Message) Refresh(ctx context.Context) error {
 	return GetMessage(ctx, m.Id, m.ShardFactor, m)
 }
@@ -59,6 +88,7 @@ func (m *Message) ToResponse() map[string]interface{} {
 		"Message":   m.Message,
 		"AuthorId":  m.AuthorId,
 		"CreatedAt": m.CreatedAt,
+		"IsRead":    m.IsRead,
 	}
 }
 

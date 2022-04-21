@@ -1,6 +1,16 @@
 version: '3'
 
 services:
+  dialog-service:
+    container_name: otus_sn_dialog_service
+    build:
+      context: .
+    restart: on-failure
+    ports:
+      - "7000:7000"
+    networks:
+      - otus_sn_network
+      - internal
   proxysql:
     container_name: otus_dialog_proxysql
     image: proxysql/proxysql:2.0.13
@@ -81,3 +91,5 @@ services:
 networks:
   internal:
     driver: bridge
+  otus_sn_network:
+    external: true

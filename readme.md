@@ -4,11 +4,7 @@
 
 ## Run
 
-    docker-compose up // запуск БД
-
-    cp .env.example .env
-
-    ./main
+    docker-compose up
 
 ## .env configuration
 
@@ -33,7 +29,7 @@
       {
           "AuthorId": 10,
           "AddresseeId": 20,
-          "Message": "New message"
+          "Message": "New message",
       }
 
   Пример ответа:
@@ -42,7 +38,26 @@
            "AuthorId": 10,
            "CreatedAt": "2022-02-17 22:13:36",
            "Id": "7f4a21fb-93ca-40da-9e76-dc0d9457a332",
-           "Message": "New message"
+           "Message": "New message",
+           "IsRead": false
+       }  
+
+- Пометить сообщения как прочитанные:
+
+  Пример запроса:
+
+      POST http://localhost:7000/api/messages/mark_as_read
+      
+      {
+          "AuthorId": 10,
+          "AddresseeId": 20,
+          "MessageIds": ["7f4a21fb-93ca-40da-9e76-dc0d9457a332"],
+      }
+
+  Пример ответа:
+      
+       {
+           "AffectedMessages": 1
        }      
 
 - Просмотр диалога между двумя пользователями:
@@ -59,7 +74,8 @@
                    "AuthorId": 10,
                    "CreatedAt": "2022-02-17 22:13:36",
                    "Id": "7f4a21fb-93ca-40da-9e76-dc0d9457a332",
-                   "Message": "New message"
+                   "Message": "New message",
+                   "IsRead": false 
                }
            ]
        }
@@ -74,7 +90,8 @@
             chat_id VARCHAR(255) NOT NULL,
             message VARCHAR(4096),
             shard_factor VARCHAR(2),
-            created_at TIMESTAMP DEFAULT (NOW())
+            created_at TIMESTAMP DEFAULT (NOW()),
+            is_read BOOLEAN DEFAULT (false )
         );
         CREATE INDEX messages_chat_id_idx ON messages (shard_factor, chat_id);
 
