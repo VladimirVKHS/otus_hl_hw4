@@ -13,6 +13,11 @@ services:
       - internal
     depends_on:
       - proxysql
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
   proxysql:
     container_name: otus_dialog_proxysql
     image: proxysql/proxysql:2.0.13

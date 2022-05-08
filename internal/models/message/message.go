@@ -71,10 +71,9 @@ func (m *MarkAsReadRequest) MarkAsRead(ctx context.Context) (int, error) {
 	res, err := otusdb.Db.ExecContext(
 		ctx,
 		"UPDATE messages SET is_read = true WHERE shard_factor = '"+shardFactor+"' AND id IN ("+strings.Join(idsArray, ", ")+") AND author_id <> ?",
-		m.AuthorId,
+		m.AddresseeId,
 	)
 	affected, _ := res.RowsAffected()
-	fmt.Println("Affected rows", affected)
 	return int(affected), err
 }
 
