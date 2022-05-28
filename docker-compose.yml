@@ -1,13 +1,70 @@
 version: '3'
 
 services:
-  dialog-service:
-    container_name: otus_sn_dialog_service
+  haproxy-consul:
+    container_name: otus_sn_dialog_haproxy
+    image: emmetog/haproxy-consul
+    environment:
+      - CONSUL_SERVER=consul-node1
+    networks:
+      - otus_sn_network
+    volumes:
+      - ./docker/haproxy/haproxy.template:/etc/haproxy/haproxy.template:ro
+    depends_on:
+      - consul-agent_1
+      - consul-agent_2
+    ports:
+      - "7000:7000"
+  consul-agent_1:
+    image: bitnami/consul:1.12.0
+    environment:
+      - CONSUL_BOOTSTRAP_EXPECT=0
+      - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+      - CONSUL_DISABLE_KEYRING_FILE=true
+      - CONSUL_RETRY_JOIN_ADDRESS=consul-node1
+      - CONSUL_ENABLE_UI=false
+      - CONSUL_AGENT_MODE=client
+    networks:
+      - otus_sn_network
+    volumes:
+      - ./docker/consul/dialog1.json:/opt/bitnami/consul/conf/dialog.json
+    depends_on:
+      - dialog-service_1
+  consul-agent_2:
+    image: bitnami/consul:1.12.0
+    environment:
+      - CONSUL_BOOTSTRAP_EXPECT=0
+      - CONSUL_CLIENT_LAN_ADDRESS=0.0.0.0
+      - CONSUL_DISABLE_KEYRING_FILE=true
+      - CONSUL_RETRY_JOIN_ADDRESS=consul-node1
+      - CONSUL_ENABLE_UI=false
+      - CONSUL_AGENT_MODE=client
+    networks:
+      - otus_sn_network
+    volumes:
+      - ./docker/consul/dialog2.json:/opt/bitnami/consul/conf/dialog.json
+    depends_on:
+      - dialog-service_2
+  dialog-service_1:
+    container_name: otus_sn_dialog_service_1
     build:
       context: .
     restart: on-failure
-    ports:
-      - "7000:7000"
+    networks:
+      - otus_sn_network
+      - internal
+    depends_on:
+      - proxysql
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+  dialog-service_2:
+    container_name: otus_sn_dialog_service_2
+    build:
+      context: .
+    restart: on-failure
     networks:
       - otus_sn_network
       - internal

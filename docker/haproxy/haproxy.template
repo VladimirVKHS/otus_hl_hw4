@@ -1,0 +1,26 @@
+global
+    maxconn 256
+
+defaults
+    log     global
+    mode    http
+    timeout connect 1000ms
+    timeout client 1000ms
+    timeout server 1000ms
+
+frontend stats
+    bind *:8404
+    stats enable
+    stats uri /stats
+    stats refresh 10s
+    stats admin if TRUE
+
+frontend dialog
+    mode    tcp
+    bind *:7000
+    default_backend dialog
+
+backend dialog
+    mode    tcp
+    balance roundrobin{{range service "dialog"}}
+    server {{.Node}} {{.Address}}:{{.Port}}{{end}}

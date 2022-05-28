@@ -1,0 +1,15 @@
+{
+  "service": {
+    "name": "dialog",
+    "tags": ["go"],
+    "address": "otus_sn_dialog_service_1",
+    "port": 7000,
+    "check": {
+      "id": "dialog_check",
+      "name": "Dialog service health 5000",
+      "tcp": "otus_sn_dialog_service_1:7000",
+      "interval": "10s",
+      "timeout": "1s"
+    }
+  }
+}
