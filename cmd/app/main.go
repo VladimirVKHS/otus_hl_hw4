@@ -7,6 +7,7 @@ import (
 	"os"
 	"otus_dialog_go/internal/logger"
 	"otus_dialog_go/internal/otusdb"
+	"otus_dialog_go/internal/otusprometheus"
 	"otus_dialog_go/internal/routes"
 )
 
@@ -20,8 +21,12 @@ func main() {
 
 	// Chi routes
 	http.Handle("/", routes.RegisterRouter())
+	http.Handle("/metrics", otusprometheus.Handler())
 
 	httpPort, _ := os.LookupEnv("HTTP_PORT")
 	fmt.Println("HTTP server started, port: " + httpPort)
-	http.ListenAndServe(":"+httpPort, nil)
+	err := http.ListenAndServe(":"+httpPort, nil)
+	if err != nil {
+		logger.Error(err.Error())
+	}
 }

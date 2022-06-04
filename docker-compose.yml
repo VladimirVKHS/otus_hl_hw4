@@ -1,7 +1,19 @@
 version: '3'
 
 services:
+  prometheus:
+    restart: on-failure
+    image: prom/prometheus
+    networks:
+      - otus_sn_network
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - haproxy-consul
   haproxy-consul:
+    restart: on-failure
     container_name: otus_sn_dialog_haproxy
     image: emmetog/haproxy-consul
     environment:
@@ -16,6 +28,7 @@ services:
     ports:
       - "7000:7000"
   consul-agent_1:
+    restart: on-failure
     image: bitnami/consul:1.12.0
     environment:
       - CONSUL_BOOTSTRAP_EXPECT=0
@@ -31,6 +44,7 @@ services:
     depends_on:
       - dialog-service_1
   consul-agent_2:
+    restart: on-failure
     image: bitnami/consul:1.12.0
     environment:
       - CONSUL_BOOTSTRAP_EXPECT=0
