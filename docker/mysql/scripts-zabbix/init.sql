@@ -1,0 +1,3 @@
+CREATE USER 'otus'@'%' IDENTIFIED BY 'otus';
+CREATE DATABASE zabbix;
+GRANT ALL PRIVILEGES ON *.* TO 'otus'@'%';

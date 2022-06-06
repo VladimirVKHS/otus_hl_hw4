@@ -123,6 +123,10 @@ services:
         limits:
           memory: 256M
           cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
   shard2:
     container_name: otus_dialog_shard2
     image: mysql
@@ -142,6 +146,10 @@ services:
         limits:
           memory: 256M
           cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
   shard3:
     container_name: otus_dialog_shard3
     image: mysql
@@ -161,6 +169,68 @@ services:
         limits:
           memory: 256M
           cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+  zabbix-db:
+    container_name: otus_dialog_zabbix-db
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: otus
+    volumes:
+      - ./docker/mysql/scripts-zabbix:/docker-entrypoint-initdb.d
+      - ./docker/mysql/zabbix_mysql_data:/var/lib/mysql
+    networks:
+      - otus_sn_network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+  zabbix-server-mysql:
+    container_name: otus_dialog_zabbix-server-mysql
+    image: zabbix/zabbix-server-mysql
+    restart: on-failure
+    environment:
+      DB_SERVER_HOST: otus_dialog_zabbix-db
+      MYSQL_USER: otus
+      MYSQL_PASSWORD: otus
+    networks:
+      - otus_sn_network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    depends_on:
+      - zabbix-db
+  zabbix-web-nginx-mysql:
+    container_name: otus_dialog_zabbix-web-nginx-mysql
+    image: zabbix/zabbix-web-nginx-mysql
+    restart: on-failure
+    environment:
+      ZBX_SERVER_HOST: otus_dialog_zabbix-server-mysql
+      DB_SERVER_HOST: otus_dialog_zabbix-db
+      MYSQL_USER: otus
+      MYSQL_PASSWORD: otus
+    networks:
+      - otus_sn_network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    ports:
+      - 9009:8080
+    depends_on:
+      - zabbix-server-mysql
 networks:
   internal:
     driver: bridge
