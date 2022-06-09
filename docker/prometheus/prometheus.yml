@@ -31,5 +31,4 @@ scrape_configs:
       - targets: [
         'otus_sn_dialog_service_1:7000',
         'otus_sn_dialog_service_2:7000',
-        'otus_sn_dialog_service_3:7000'
       ]
