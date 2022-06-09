@@ -2,6 +2,7 @@ version: '3'
 
 services:
   prometheus:
+    container_name: otus_sn_dialog_prometheus
     restart: on-failure
     image: prom/prometheus
     networks:
@@ -231,6 +232,24 @@ services:
       - 9009:8080
     depends_on:
       - zabbix-server-mysql
+  grafana:
+    image: grafana/grafana-oss
+    container_name: otus_dialog_grafana
+    restart: on-failure
+    networks:
+      - otus_sn_network
+    volumes:
+      - ./docker/grafana/storage:/var/lib/grafana
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    ports:
+      - 9010:3000
+    depends_on:
+      - zabbix-server-mysql
+      - prometheus
 networks:
   internal:
     driver: bridge
