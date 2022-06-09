@@ -7,7 +7,6 @@
  
      - zabbix-db   - сервер БД для Zabbix
      - zabbix-server-mysql   - сервер Zabbix
-     - zabbix-server-mysql   - сервер Zabbix
      - zabbix-web-nginx-mysql - web-интерфйес Zabbix
   
 - в web-интерфйесе (http://localhost:9009/) добавлены хосты обоих инстансов для мониторинга за состоянием серверов
